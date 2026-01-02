@@ -1800,11 +1800,28 @@ footer .demo-notice {
 </footer>
 
 <script>
-// Hide loader after page loads
-window.addEventListener("load", function() {
+// Hide loader after 5 seconds (fixed time, doesn't wait for images)
+// This will be triggered when website content is shown (after authentication)
+let loaderTimeoutStarted = false;
+
+function startLoaderTimer() {
+    if (loaderTimeoutStarted) return;
+    loaderTimeoutStarted = true;
+    
     setTimeout(function() {
-        document.getElementById("loader").classList.add("hidden");
-    }, 500);
+        const loader = document.getElementById("loader");
+        if (loader) {
+            loader.classList.add("hidden");
+        }
+    }, 5000); // Show loader for 5 seconds
+}
+
+// Start timer when DOM is ready (will only matter if already authenticated)
+document.addEventListener("DOMContentLoaded", function() {
+    // Check if already authenticated on page load
+    if (sessionStorage.getItem("melisa_authenticated") === "true") {
+        startLoaderTimer();
+    }
 });
 
 // Hero Slider Auto-Play
@@ -2131,6 +2148,9 @@ function showWebsite() {
     
     passwordScreen.classList.add("hidden");
     websiteContent.classList.add("authenticated");
+    
+    // Start the loader timer when website is shown
+    startLoaderTimer();
 }
 
 // Check authentication on page load (run immediately)
